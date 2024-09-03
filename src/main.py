@@ -3,13 +3,41 @@ import re
 import sys
 import threading
 
-# Import functions
-from aptopus.functions import ai, help
-from aptopus.utils import arguments
+# Import modules
+from aptopus.docter import AptopusDocter
+from aptopus.io import AptopusIO
+from aptopus.args import AptopusArgsParser
 
-def main(argv=None, input=None, output=None, force_git_root=None, return_coder=False):
-  print("Hello from aptopus")
+# Import functions from function module
+from aptopus.ai import AptopusAIInteractor
+
+def main():
+  args_parser = AptopusArgsParser()
+  
+  args = args_parser.get_args()
+
+  # If the command is a one run command
+  # process and return to user
+  if args.question != None:
+    print("Your fast question will be hanlded here")
+    return
+
+  io = AptopusIO(args_parser=args_parser)
+  docter = AptopusDocter(io=io)
+
+  # Otherwise, Aptopus will start a new conversation
+  # by default
+  while True:
+    try:
+      docter.run()
+      return None
+    except SystemExit:
+      sys.exit(0)
+    except:
+      # Process other use cases after the program
+      # is stop
+      print()
 
 if __name__ == "__main__":
-  status = main()
-  sys.exit(status)
+  main()
+  sys.exit(0)
