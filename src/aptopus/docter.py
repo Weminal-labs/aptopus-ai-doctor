@@ -11,25 +11,53 @@ Program's modules are:
 import os
 import sys
 
+#
+from .ai import AptopusAIInteractor
+from .socket_client import SocketClient
+
 class AptopusDocter:
   def __init__(self, io) -> None:
     self.io = io
+
+    # Create SocketClient instance
+    self.socket = SocketClient()
+    self.socket.connect()
+
+    # Create AptopusAIClient
+    self.ai_interactor = AptopusAIInteractor(self.socket)
     pass
 
   def handle_input(self, input):
-    self.io.output(f"Your input: {input}")
+    data = {
+      "type": "receive_question",
+      "data": input
+    }
+
+    self.socket.send(data)
+
+    # Wait for response from server
+    data = self.socket.receive()
+    
+    if data["type"] == "answer_available":
+      return self.ai_interactor.get_anwser()
 
   def run(self):
     while True:
       try:
         # Get input from user
-        input = self.io.get_input()
+        input = self.io.get_input("You > ")
 
         # Handle input from user
-        self.handle_input(input)
+        message = self.handle_input(input)
+
+        # Print message
+        self.io.output(f"Aptopus > {message}")
         self.io.output()
         
       except KeyboardInterrupt:
         # Do something if user presses ctrl-c
         self.io.output("Exit")
         raise SystemExit
+      
+      except Exception as e:
+        print(f"There is an error: {e}")

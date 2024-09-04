@@ -4,14 +4,16 @@ create and instance of socket to handle the base of listener
 and emitter of socket.
 """
 
-import socket
+from websockets.sync.client import connect
 import json
+
+import websockets.sync
 
 class SocketClient:
   def __init__(self) -> None:
-    self.host = "ws://127.0.0.0/ws/12345"
-    self.port = "8080"
-    self._instance = socket.socket()
+    self.host = "ws://127.0.0.1:8080/ws/12345"
+    self.port = 8080
+    self._instance = None
     self._listener = {}
     pass
 
@@ -25,8 +27,8 @@ class SocketClient:
       if data_transformer != None:
         self._instance.send(json.dumps(data_transformer(data)))
       self._instance.send(json.dumps(data))
-    except:
-      print("Fail to send message to SocketServer")
+    except Exception as e:
+      print(f"Fail to send message to SocketServer: {e}")
 
   def receive(self, size=1024, data_transformer=None):
     """If program is running in a infinite loop, it use this
@@ -35,8 +37,8 @@ class SocketClient:
     Returns:
         Any: Depend on the type of response data.
     """
-    date_str = self._instance.recv(size).decode()
-    data = json.loads(date_str)
+    data_str = self._instance.recv()
+    data = json.loads(data_str)
 
     if data_transformer != None:
       data = data_transformer(data)
@@ -63,7 +65,7 @@ class SocketClient:
     self._listener.pop(name)
 
   def connect(self):
-    self._instance.connect((self.host, self.port))
+    self._instance = connect(self.host)
 
   def disconnect(self):
     self._instance.close()

@@ -27,6 +27,8 @@ def main():
 
   # Otherwise, Aptopus will start a new conversation
   # by default
+  io.clear_screan()
+
   while True:
     try:
       docter.run()

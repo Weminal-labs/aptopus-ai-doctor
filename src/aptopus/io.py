@@ -29,6 +29,7 @@ import sys
 from prompt_toolkit import prompt, print_formatted_text as print
 from prompt_toolkit.styles import Style
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.shortcuts import clear
 
 class AptopusIO:
   def __init__(self, args_parser) -> None:
@@ -48,3 +49,6 @@ class AptopusIO:
 
     content = prompt(message, key_bindings=kb)
     return content
+  
+  def clear_screan(self):
+    clear()
