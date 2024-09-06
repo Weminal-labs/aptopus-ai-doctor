@@ -47,7 +47,7 @@ def main():
       input = prompt(f"{questions[times % len(questions)]} - ", key_bindings=kb)
       answers.append((result_titles[times % len(result_titles)], input))
       times += 1
-  except KeyboardInterrupt:
+  except SystemExit:
     print(HTML("\n<strong><success>Information collected!</success></strong>"), style=style)
 
     result = ""

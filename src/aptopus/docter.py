@@ -11,12 +11,13 @@ Program's modules are:
 import os
 import sys
 
-#
+# Import from local
 from .ai import AptopusAIInteractor
 from .socket_client import SocketClient
+from .io import AptopusIO
 
 class AptopusDocter:
-  def __init__(self, io) -> None:
+  def __init__(self, io: AptopusIO) -> None:
     self.io = io
 
     # Create SocketClient instance
@@ -25,6 +26,9 @@ class AptopusDocter:
 
     # Create AptopusAIClient
     self.ai_interactor = AptopusAIInteractor(self.socket)
+
+    self.user_indicator_output = self.io.attach_font_style("You > ", style="bold", is_html_result=True)
+    self.bot_indicator_output = self.io.paint_text(self.io.attach_font_style("Aptopus >", style="bold"), text_color="green")
     pass
 
   def handle_input(self, input):
@@ -45,13 +49,15 @@ class AptopusDocter:
     while True:
       try:
         # Get input from user
-        input = self.io.get_input("You > ")
-
+        input = self.io.get_input(self.user_indicator_output, placeholder="Enter your question here")
+        self.io.output(self.bot_indicator_output, is_inline=True)
+        self.io.output("Please wait, answer is be generated...", is_markdown=False, is_inline=True)
+        
         # Handle input from user
         message = self.handle_input(input)
 
         # Print message
-        self.io.output(f"Aptopus > {message}")
+        self.io.output(message, is_markdown=True, is_inline=True)
         self.io.output()
         
       except KeyboardInterrupt:
@@ -61,3 +67,4 @@ class AptopusDocter:
       
       except Exception as e:
         print(f"There is an error: {e}")
+        raise SystemExit

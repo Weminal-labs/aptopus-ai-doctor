@@ -27,7 +27,7 @@ def main():
 
   # Otherwise, Aptopus will start a new conversation
   # by default
-  io.clear_screan()
+  io.clear_screen()
 
   while True:
     try:
@@ -35,10 +35,10 @@ def main():
       return None
     except SystemExit:
       sys.exit(0)
-    except:
+    except Exception as e:
       # Process other use cases after the program
       # is stop
-      print()
+      print(e)
 
 if __name__ == "__main__":
   main()
