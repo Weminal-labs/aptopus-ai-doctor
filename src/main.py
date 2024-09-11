@@ -4,7 +4,7 @@ import sys
 import threading
 
 # Import modules
-from aptopus.docter import AptopusDocter
+from aptopus.doctor import AptopusDoctor
 from aptopus.io import AptopusIO
 from aptopus.args import AptopusArgsParser
 
@@ -23,7 +23,7 @@ def main():
     return
 
   io = AptopusIO(args_parser=args_parser)
-  docter = AptopusDocter(io=io)
+  doctor = AptopusDoctor(io=io)
 
   # Otherwise, Aptopus will start a new conversation
   # by default
@@ -31,14 +31,13 @@ def main():
 
   while True:
     try:
-      docter.run()
+      doctor.run()
       return None
-    except SystemExit:
-      sys.exit(0)
     except Exception as e:
-      # Process other use cases after the program
-      # is stop
+      # The strange exception is threw
+      # Terminate program
       print(e)
+      sys.exit(0)
 
 if __name__ == "__main__":
   main()

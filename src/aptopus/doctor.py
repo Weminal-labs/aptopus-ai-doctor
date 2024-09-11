@@ -11,12 +11,17 @@ Program's modules are:
 import os
 import sys
 
+# Import from prompt_toolkit 
+from prompt_toolkit import HTML
+
 # Import from local
 from .ai import AptopusAIInteractor
 from .socket_client import SocketClient
 from .io import AptopusIO
 
-class AptopusDocter:
+DialogContent = list[HTML | str] | list[HTML] | list[str] | HTML | str
+
+class AptopusDoctor:
   def __init__(self, io: AptopusIO) -> None:
     self.io = io
 
@@ -28,8 +33,27 @@ class AptopusDocter:
     self.ai_interactor = AptopusAIInteractor(self.socket)
 
     self.user_indicator_output = self.io.attach_font_style("You > ", style="bold", is_html_result=True)
-    self.bot_indicator_output = self.io.paint_text(self.io.attach_font_style("Aptopus >", style="bold"), text_color="green")
+    self.bot_indicator_output = self.io.paint_text(self.io.attach_font_style("Aptopus > ", style="bold"), text_color="green")
     pass
+
+  def bot_output(
+    self,
+    *output: DialogContent,
+    is_markdown: bool = False,
+    is_new: bool = False
+  ):
+    if is_new:
+      print(end="\r")
+
+    self.io.output(self.bot_indicator_output, is_inline=True)
+
+    if len(output) > 1:
+      for c in output:
+        self.io.output(c, is_inline=True, is_markdown=is_markdown)
+      return
+
+    if len(output) > 0:
+      self.io.output(output[0], is_inline=True, is_markdown=is_markdown)
 
   def handle_input(self, input):
     data = {
@@ -49,20 +73,22 @@ class AptopusDocter:
     while True:
       try:
         # Get input from user
-        input = self.io.get_input(self.user_indicator_output, placeholder="Enter your question here")
-        self.io.output(self.bot_indicator_output, is_inline=True)
-        self.io.output("Please wait, answer is be generated...", is_markdown=False, is_inline=True)
+        input = self.io.get_input(
+          self.user_indicator_output,
+          placeholder="Enter your question here"
+        )
+        self.bot_output("generating...", is_markdown=False)
         
         # Handle input from user
         message = self.handle_input(input)
 
-        # Print message
-        self.io.output(message, is_markdown=True, is_inline=True)
+        # Print response from remote docter
+        self.bot_output(message, is_markdown=True, is_new=True)
         self.io.output()
         
       except KeyboardInterrupt:
         # Do something if user presses ctrl-c
-        self.io.output("Exit")
+        self.io.output(self.bot_indicator_output, "see you again!")
         raise SystemExit
       
       except Exception as e:

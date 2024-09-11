@@ -39,6 +39,7 @@ from rich.markdown import Markdown
 
 AptopusColors = Literal["red", "green", "blue", "yellow", "white", "gray", "purple", "pink"]
 AptopusFontStyles = Literal["default", "italic", "bold", "italic_bold"]
+
 console = Console()
 
 class AptopusIO:
@@ -141,8 +142,8 @@ class AptopusIO:
   def output(
     self,
     output: HTML | str | None = None,
-    is_markdown = True,
-    is_inline = False
+    is_markdown: bool = False,
+    is_inline = False,
   ):
     """Print output to terminal console. Format of output can be `markdown`, `formatted_text`,
     `str` or `None`.
@@ -152,7 +153,9 @@ class AptopusIO:
         is_markdown (bool, optional): if the output is in markdown format, set to `True`
         is_inline (bool, optional): if you want to put the output in the same line with previous output, set to `True`
     """
-    if output == None: print()
+    if output == None:
+      print()
+      return
     if isinstance(output, HTML):
       is_markdown = False
 
@@ -163,7 +166,7 @@ class AptopusIO:
       _print = console.print
 
     if is_inline:
-      _print(output, style=(None if is_markdown else self.style), end=" ")
+      _print(output, style=(None if is_markdown else self.style), end="")
     else:
       _print(output, style=(None if is_markdown else self.style))
 
