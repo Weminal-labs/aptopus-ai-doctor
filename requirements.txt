@@ -1,0 +1,6 @@
+# install rich
+rich===13.8.0
+prompt_toolkit===3.0.47
+rich===13.8.0
+argparse===1.4.0
+websockets===13.0.1
